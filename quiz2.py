@@ -1,3 +1,21 @@
+# NUIST Quiz Game with LED feedback
+import RPi.GPIO as GPIO
+import time
+
+# Initialize GPIO
+GPIO.setmode(GPIO.BCM)
+GPIO.setwarnings(False)
+
+# Set up LED pins
+RED_LED = 17    # Pin for red LED (wrong answers)
+GREEN_LED = 18  # Pin for green LED (correct answers)
+GPIO.setup(RED_LED, GPIO.OUT)
+GPIO.setup(GREEN_LED, GPIO.OUT)
+
+# Turn off both LEDs initially
+GPIO.output(RED_LED, GPIO.LOW)
+GPIO.output(GREEN_LED, GPIO.LOW)
+
 def quiz():
     print("Welcome to the Python Knowledge Quiz!")
     print("Answer the following questions:")
@@ -26,13 +44,24 @@ def quiz():
         user_answer = input(questions[i] + "\nYour answer: ").strip().lower()
         if user_answer == answers[i]:
             print("Correct!")
+            # Light up green LED for correct answer
+            GPIO.output(GREEN_LED, GPIO.HIGH)
+            time.sleep(1)  # LED stays on for 1 second
+            GPIO.output(GREEN_LED, GPIO.LOW)
             score += 1
         else:
             print(f"Incorrect! The correct answer is {answers[i]}.")
+            # Light up red LED for wrong answer
+            GPIO.output(RED_LED, GPIO.HIGH)
+            time.sleep(1)  # LED stays on for 1 second
+            GPIO.output(RED_LED, GPIO.LOW)
 
     # Provide final score
     print("\nQuiz completed!")
     print(f"You got {score}/{len(questions)} questions correct.")
+    
+    # Clean up GPIO
+    GPIO.cleanup()
 
 # Run the quiz function
 quiz()
